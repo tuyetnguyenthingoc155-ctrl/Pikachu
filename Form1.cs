@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Media;
 using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography;
 using System.Text;
@@ -13,6 +14,9 @@ using System.Windows.Forms;
 
 namespace Pikachu
 {
+    // ==========================================
+    // PHẦN 1: CLASS FORM CHÍNH (NẰM TRÊN CÙNG)
+    // ==========================================
     public partial class Form1 : Form
     {
         int rows = 9;
@@ -34,27 +38,65 @@ namespace Pikachu
         private int score = 0;
         private int timeLeft = 300;
         private Timer countdownTimer;
+
+        private SoundPlayer bgMusicPlayer;
+        private bool isMusicPlaying = false;
+
         public Form1(string currentUsername)
         {
             userName = currentUsername;
             InitializeComponent();
+
+            panelMiddle.Size = new Size((cols + 2) * tileSize, (rows + 2) * tileSize);
+
+            Panel oldPanel = panelOverPlay;
+            panelOverPlay = new TransparentPanel();
+            panelOverPlay.Name = "panelOverPlay";
+            panelOverPlay.Location = new Point(0, 0);
+            panelOverPlay.Size = panelMiddle.Size;
+            panelOverPlay.Paint += panelOverPlay_Paint;
+
+            if (oldPanel != null && oldPanel.Parent != null)
+            {
+                oldPanel.Parent.Controls.Remove(oldPanel);
+            }
+            panelMiddle.Controls.Add(panelOverPlay);
+            panelOverPlay.BringToFront();
+
             connectionPoints = new List<Point>();
             LoadConGiapImage();
             Initializeboard();
-
-
 
             countdownTimer = new System.Windows.Forms.Timer();
             countdownTimer.Interval = 1000;
             countdownTimer.Tick += CountdownTimer_Tick;
             countdownTimer.Start();
-           
+
+            PlayBackgroundMusic();
         }
 
+        private void PlayBackgroundMusic()
+        {
+            try
+            {
+                if (Properties.Resources.nhacnen != null)
+                {
+                    bgMusicPlayer = new SoundPlayer(Properties.Resources.nhacnen);
+                    bgMusicPlayer.PlayLooping();
+                    isMusicPlaying = true;
+
+                    btnToggleMusic.BackgroundImage = Properties.Resources.mở_nhạc;
+                    btnToggleMusic.BackgroundImageLayout = ImageLayout.Stretch;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Không thể phát nhạc nền: " + ex.Message);
+            }
+        }
 
         private void LoadConGiapImage()
         {
-            // Load the Pikachu image from the resources
             congiapImages = new Image[]
             {
                 Properties.Resources.conchuot,
@@ -71,6 +113,7 @@ namespace Pikachu
                 Properties.Resources.conheo,
             };
         }
+
         private void Initializeboard()
         {
             congiappictureBox = new PictureBox[rows, cols];
@@ -84,13 +127,8 @@ namespace Pikachu
                 congiapIndexes.Add(index);
             }
 
-            for (int i = 0; i < congiapIndexes.Count; i++)
-            {
-                int j = random.Next(i, congiapIndexes.Count);
-                int temp = congiapIndexes[i];
-                congiapIndexes[i] = congiapIndexes[j];
-                congiapIndexes[j] = temp;
-            }
+            // Trộn danh sách hình ảnh
+            ShuffleList(congiapIndexes);
 
             int k = 0;
             for (int i = 0; i < rows; i++)
@@ -100,17 +138,16 @@ namespace Pikachu
                     PictureBox pb = new PictureBox();
                     pb.Width = tileSize;
                     pb.Height = tileSize;
-                    pb.Left = j * tileSize;
-                    pb.Top = i * tileSize;
+
+                    pb.Left = (j + 1) * tileSize;
+                    pb.Top = (i + 1) * tileSize;
 
                     pb.SizeMode = PictureBoxSizeMode.StretchImage;
-
                     pb.BorderStyle = BorderStyle.FixedSingle;
 
                     int imangeIndex = congiapIndexes[k++];
 
                     pb.Image = congiapImages[imangeIndex];
-
                     boardMap[i, j] = imangeIndex;
 
                     panelMiddle.Controls.Add(pb);
@@ -119,11 +156,95 @@ namespace Pikachu
                     pb.Click += picturebox_Click;
                 }
             }
+
+            // Kiểm tra xem bàn hiện tại có đường đi hợp lệ không, nếu không tự động xáo lại ngay từ đầu
+            while (!HasAnyValidMove())
+            {
+                ShuffleBoardValues();
+            }
+
+            if (panelOverPlay != null)
+            {
+                panelOverPlay.BringToFront();
+            }
         }
+
+        private void ShuffleList<T>(List<T> list)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = random.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+        }
+
+        // Hàm xáo trộn lại các giá trị còn lại trên bàn khi bị kẹt
+        private void ShuffleBoardValues()
+        {
+            List<int> remainingValues = new List<int>();
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if (boardMap[i, j] != -1)
+                    {
+                        remainingValues.Add(boardMap[i, j]);
+                    }
+                }
+            }
+
+            ShuffleList(remainingValues);
+
+            int k = 0;
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if (boardMap[i, j] != -1)
+                    {
+                        boardMap[i, j] = remainingValues[k++];
+                        congiappictureBox[i, j].Image = congiapImages[boardMap[i, j]];
+                    }
+                }
+            }
+        }
+
+        // Kiểm tra xem trên bàn còn ít nhất một cặp có thể nối được hay không
+        private bool HasAnyValidMove()
+        {
+            for (int r1 = 0; r1 < rows; r1++)
+            {
+                for (int c1 = 0; c1 < cols; c1++)
+                {
+                    if (boardMap[r1, c1] == -1) continue;
+                    for (int r2 = 0; r2 < rows; r2++)
+                    {
+                        for (int c2 = 0; c2 < cols; c2++)
+                        {
+                            if (boardMap[r2, c2] == -1) continue;
+                            if (r1 == r2 && c1 == c2) continue;
+
+                            if (boardMap[r1, c1] == boardMap[r2, c2])
+                            {
+                                Point p1 = new Point(r1, c1);
+                                Point p2 = new Point(r2, c2);
+                                var path = ConnectStraight(p1, p2) ?? ConnectL(p1, p2) ?? Connect3Line(p1, p2);
+                                if (path != null) return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
         private async Task ResetSelectionAsync()
         {
-            // Đợi nửa giây để người chơi nhận ra mình chọn sai
-            await Task.Delay(500);
+            await Task.Delay(400);
 
             if (selected1 != null) selected1.BorderStyle = BorderStyle.FixedSingle;
             if (selected2 != null) selected2.BorderStyle = BorderStyle.FixedSingle;
@@ -131,16 +252,18 @@ namespace Pikachu
             selected1 = null;
             selected2 = null;
         }
+
         private async void picturebox_Click(object sender, EventArgs e)
         {
             if (isProcessing) return;
 
             PictureBox selected = sender as PictureBox;
 
-            if (selected.Image == null)
+            if (selected == null || selected.Image == null)
             {
                 return;
             }
+
             if (selected1 == selected)
             {
                 selected1.BorderStyle = BorderStyle.FixedSingle;
@@ -154,6 +277,7 @@ namespace Pikachu
                 selected1.BorderStyle = BorderStyle.Fixed3D;
                 return;
             }
+
             if (selected2 == null && selected != selected1)
             {
                 selected2 = selected;
@@ -169,9 +293,23 @@ namespace Pikachu
                     var path = ConnectStraight(pos1, pos2) ?? ConnectL(pos1, pos2) ?? Connect3Line(pos1, pos2);
                     if (path != null)
                     {
-                        connectionPoints = path.Select(p => new Point(p.Y * tileSize + tileSize / 2,p.X * tileSize + tileSize / 2)).ToList();
+                        connectionPoints = path.Select(p =>
+                        {
+                            if (p.X >= 0 && p.X < rows && p.Y >= 0 && p.Y < cols)
+                            {
+                                PictureBox pb = congiappictureBox[p.X, p.Y];
+                                if (pb != null)
+                                {
+                                    return new Point(pb.Left + pb.Width / 2, pb.Top + pb.Height / 2);
+                                }
+                            }
+                            return new Point((p.Y + 1) * tileSize + tileSize / 2, (p.X + 1) * tileSize + tileSize / 2);
+                        }).ToList();
 
-                        panelMiddle.Invalidate();
+                        panelOverPlay.Invalidate();
+                        panelOverPlay.Update();
+
+                        await Task.Delay(300);
 
                         boardMap[pos1.X, pos1.Y] = -1;
                         boardMap[pos2.X, pos2.Y] = -1;
@@ -185,12 +323,17 @@ namespace Pikachu
                         selected1 = null;
                         selected2 = null;
 
+                        connectionPoints.Clear();
+                        panelOverPlay.Invalidate();
+                        panelMiddle.Invalidate(true);
+                        panelMiddle.Update();
+
                         score += 10;
                         diem.Text = "Điểm: " + score;
+
                         if (IsBoardCleaned())
                         {
                             countdownTimer.Stop();
-
                             SavePlayerScore(userName, score);
 
                             DialogResult result = MessageBox.Show(
@@ -199,6 +342,7 @@ namespace Pikachu
                                 MessageBoxButtons.YesNo,
                                 MessageBoxIcon.Question
                             );
+
                             if (result == DialogResult.Yes)
                             {
                                 ResetGame(true);
@@ -210,18 +354,28 @@ namespace Pikachu
                         }
                         else
                         {
-                            // Chọn sai 2 hình khác nhau
-                            await ResetSelectionAsync();
+                            // Kiểm tra nếu nước đi tiếp theo bị kẹt, tự động xáo lại bàn chơi và thông báo cho người chơi
+                            while (!IsBoardCleaned() && !HasAnyValidMove())
+                            {
+                                ShuffleBoardValues();
+                                MessageBox.Show("Hết nước đi! Bàn chơi đã được tự động xáo trộn lại.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
                         }
                     }
                     else
                     {
                         await ResetSelectionAsync();
                     }
-                    isProcessing = false;
                 }
+                else
+                {
+                    await ResetSelectionAsync();
+                }
+
+                isProcessing = false;
             }
         }
+
         private int GetBoardValue(int x, int y)
         {
             if (x == -1 || y == -1 || x == rows || y == cols)
@@ -234,6 +388,7 @@ namespace Pikachu
             }
             return boardMap[x, y];
         }
+
         private List<Point> ConnectStraight(Point a, Point b)
         {
             if (a.X == b.X)
@@ -264,6 +419,7 @@ namespace Pikachu
             }
             return null;
         }
+
         private Point GetPictureBoxPosition(PictureBox pb)
         {
             for (int i = 0; i < rows; i++)
@@ -278,6 +434,7 @@ namespace Pikachu
             }
             return Point.Empty;
         }
+
         private List<Point> ConnectL(Point a, Point b)
         {
             Point c1 = new Point(a.X, b.Y);
@@ -285,13 +442,16 @@ namespace Pikachu
             {
                 return new List<Point> { a, c1, b };
             }
+
             Point c2 = new Point(b.X, a.Y);
             if (Isempty(c2) && ConnectStraight(a, c2) != null && ConnectStraight(c2, b) != null)
             {
                 return new List<Point> { a, c2, b };
             }
+
             return null;
         }
+
         private bool Isempty(Point p)
         {
             return GetBoardValue(p.X, p.Y) == -1;
@@ -305,28 +465,29 @@ namespace Pikachu
                 Point mid2 = new Point(i, b.Y);
                 if (Isempty(mid1) && Isempty(mid2))
                 {
-                    if (ConnectStraight(a, mid1) != null && ConnectL(mid1, mid2) != null && ConnectStraight(mid2, b) != null)
+                    if (ConnectStraight(a, mid1) != null && ConnectStraight(mid1, mid2) != null && ConnectStraight(mid2, b) != null)
                     {
                         return new List<Point> { a, mid1, mid2, b };
                     }
                 }
             }
+
             for (int j = -1; j <= cols; j++)
             {
-                Point mid1 = new Point(j, a.Y);
-                Point mid2 = new Point(j, b.Y);
+                Point mid1 = new Point(a.X, j);
+                Point mid2 = new Point(b.X, j);
                 if (Isempty(mid1) && Isempty(mid2))
                 {
-                    if (ConnectStraight(a, mid1) != null && ConnectL(mid1, mid2) != null && ConnectStraight(mid2, b) != null)
+                    if (ConnectStraight(a, mid1) != null && ConnectStraight(mid1, mid2) != null && ConnectStraight(mid2, b) != null)
                     {
                         return new List<Point> { a, mid1, mid2, b };
                     }
                 }
-
             }
 
             return null;
         }
+
         private bool IsBoardCleaned()
         {
             for (int i = 0; i < rows; i++)
@@ -355,7 +516,6 @@ namespace Pikachu
             MessageBox.Show("Điểm hiện tại: " + score);
         }
 
-
         private void CountdownTimer_Tick(object sender, EventArgs e)
         {
             timeLeft--;
@@ -373,6 +533,7 @@ namespace Pikachu
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question
                 );
+
                 if (result == DialogResult.Yes)
                 {
                     ResetGame(true);
@@ -384,8 +545,6 @@ namespace Pikachu
             }
         }
 
-
-
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (countdownTimer != null)
@@ -394,6 +553,7 @@ namespace Pikachu
             }
             SavePlayerScore(userName, score);
         }
+
         private void SavePlayerScore(string userName, int score)
         {
             if (daLuuDiem)
@@ -438,6 +598,12 @@ namespace Pikachu
         private void ResetGame(bool IsContinue = false)
         {
             panelMiddle.Controls.Clear();
+
+            if (panelOverPlay != null)
+            {
+                panelMiddle.Controls.Add(panelOverPlay);
+            }
+
             congiappictureBox = new PictureBox[rows, cols];
             boardMap = new int[rows, cols];
             selected1 = null;
@@ -457,7 +623,6 @@ namespace Pikachu
                 countdownTimer.Stop();
                 countdownTimer.Start();
             }
-
         }
 
         private void btnReset_Click(object sender, EventArgs e)
@@ -500,30 +665,17 @@ namespace Pikachu
             }
         }
 
-
         private void panelBoard_Paint(object sender, PaintEventArgs e)
         {
-            if (connectionPoints != null && connectionPoints.Count > 1)
-            {
-                using (Pen redPen = new Pen(Color.Red, 3))
-                {
-                    for (int i = 0; i < connectionPoints.Count - 1; i++)
-                    {
-                        e.Graphics.DrawLine(
-                            redPen,
-                            connectionPoints[i],
-                            connectionPoints[i + 1]
-                        );
-                    }
-                }
-            }
         }
+
         private void panelOverPlay_Paint(object sender, PaintEventArgs e)
         {
             if (connectionPoints == null || connectionPoints.Count < 2)
                 return;
 
-            using (Pen redPen = new Pen(Color.Red, 3))
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            using (Pen redPen = new Pen(Color.Red, 4))
             {
                 for (int i = 0; i < connectionPoints.Count - 1; i++)
                 {
@@ -535,5 +687,37 @@ namespace Pikachu
                 }
             }
         }
-    }
-}
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (bgMusicPlayer == null) return;
+
+            if (isMusicPlaying)
+            {
+                bgMusicPlayer.Stop();
+                isMusicPlaying = false;
+                btnToggleMusic.BackgroundImage = Properties.Resources.tắt_nhạc;
+            }
+            else
+            {
+                bgMusicPlayer.PlayLooping();
+                isMusicPlaying = true;
+                btnToggleMusic.BackgroundImage = Properties.Resources.mở_nhạc;
+            }
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            string luatChoi = "=== LUẬT CHƠI GAME PIKACHU ===\n\n" +
+                              "1. Nhiệm vụ: Tìm và nối hai hình con giáp giống nhau để làm sạch bàn chơi trước khi hết thời gian.\n" +
+                              "2. Cách nối:\n" +
+                              "   - Đường nối thẳng: Không bị hình nào cản giữa hai điểm.\n" +
+                              "   - Đường nối hình chữ L: Gập tối đa 1 góc vuông (1 lần đổi hướng).\n" +
+                              "   - Đường nối hình chữ Z / 3 đoạn thẳng: Gập tối đa 2 góc vuông (2 lần đổi hướng).\n" +
+                              "3. Điểm số: Mỗi cặp nối thành công được cộng 10 điểm.\n" +
+                              "4. Hỗ trợ: Khi bàn chơi không còn cặp nào có thể ăn được, hệ thống sẽ tự động xáo trộn lại để bạn tiếp tục chơi!";
+
+            MessageBox.Show(luatChoi, "Luật Chơi Pikachu", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+    } // KẾT THÚC CLASS FORM1 TẠI ĐÂY
+} // KẾT THÚC NAMESPACE
