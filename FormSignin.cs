@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
+using System.IO; // Thêm thư viện này để đọc/ghi file text
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Pikachu
 {
@@ -18,10 +17,12 @@ namespace Pikachu
         {
             InitializeComponent();
         }
-        private void btnDangNhap_Click (object sender, EventArgs e)
+
+        private void btnDangNhap_Click(object sender, EventArgs e)
         {
             this.Close();
         }
+
         private void btnDangKy_Click(object sender, EventArgs e)
         {
             string username = tbDangKy.Text.Trim();
@@ -33,58 +34,48 @@ namespace Pikachu
                 return;
             }
 
+            // Đường dẫn file lưu tài khoản nằm trong thư mục chạy của chương trình (bin/Debug)
+            string filePath = Application.StartupPath + "\\accounts.txt";
+
             try
             {
-                using (SqlConnection connection = CONNECT.GetConnection())
+                // 1. Kiểm tra xem tên đăng ký đã tồn tại chưa
+                if (File.Exists(filePath))
                 {
-                    connection.Open();
-
-                    string checkQuery = "SELECT * FROM [dbo].[Table] WHERE UserName = @UserName";
-
-                    using (SqlCommand checkCommand = new SqlCommand(checkQuery, connection))
+                    string[] lines = File.ReadAllLines(filePath);
+                    foreach (string line in lines)
                     {
-                        checkCommand.Parameters.AddWithValue("@UserName", username);
+                        if (string.IsNullOrWhiteSpace(line)) continue;
 
-                        using (SqlDataReader reader = checkCommand.ExecuteReader())
+                        // So sánh tên nhập vào với các tên đã lưu trong file
+                        if (line.Trim().Equals(username, StringComparison.OrdinalIgnoreCase))
                         {
-                            if (reader.HasRows)
-                            {
-                                MessageBox.Show("Tên đăng ký đã tồn tại. Vui lòng chọn tên khác.",
-                                    "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                return;
-                            }
-                        }
-                    }
-
-                    string insertQuery = "INSERT INTO [dbo].[Table] (UserName) VALUES (@UserName)";
-
-                    using (SqlCommand insertCommand = new SqlCommand(insertQuery, connection))
-                    {
-                        insertCommand.Parameters.AddWithValue("@UserName", username);
-
-                        int rowsAffected = insertCommand.ExecuteNonQuery();
-
-                        if (rowsAffected > 0)
-                        {
-                            MessageBox.Show("Đăng ký thành công!",
-                                "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                            this.DialogResult = DialogResult.OK;
-                            this.Close();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Đăng ký thất bại. Vui lòng thử lại.",
+                            MessageBox.Show("Tên đăng ký đã tồn tại. Vui lòng chọn tên khác.",
                                 "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
                         }
                     }
                 }
+
+                // 2. Ghi tên đăng ký mới vào file text
+                File.AppendAllText(filePath, username + Environment.NewLine);
+
+                MessageBox.Show("Đăng ký thành công!",
+                    "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                this.DialogResult = DialogResult.OK;
+                this.Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Có lỗi khi đăng ký: " + ex.Message,
                     "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void tbDangKy_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

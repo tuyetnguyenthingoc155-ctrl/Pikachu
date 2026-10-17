@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Media;
 using System.Runtime.Remoting.Messaging;
@@ -19,8 +19,9 @@ namespace Pikachu
     // ==========================================
     public partial class Form1 : Form
     {
-        int rows = 9;
-        int cols = 16;
+        int currentLevel = 1; // Bắt đầu từ màn 1
+        int rows = 6;
+        int cols = 10;
         int tileSize = 35;
         Image[] congiapImages;
         PictureBox[,] congiappictureBox;
@@ -41,11 +42,17 @@ namespace Pikachu
 
         private SoundPlayer bgMusicPlayer;
         private bool isMusicPlaying = false;
+        private bool isPaused = false;
+
+        private string scoreFilePath = Application.StartupPath + "\\highscores.txt";
 
         public Form1(string currentUsername)
         {
             userName = currentUsername;
             InitializeComponent();
+
+            this.FormClosing += Form1_FormClosing;
+            this.Resize += Form1_Resize;
 
             panelMiddle.Size = new Size((cols + 2) * tileSize, (rows + 2) * tileSize);
 
@@ -73,6 +80,53 @@ namespace Pikachu
             countdownTimer.Start();
 
             PlayBackgroundMusic();
+            UpdateBoardSize();
+
+            this.Text = "Game Pikachu - Màn " + currentLevel;
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            UpdateBoardSize();
+        }
+
+        private void UpdateBoardSize()
+        {
+            if (congiappictureBox == null || panelMiddle == null) return;
+
+            int availableWidth = this.ClientSize.Width - 40;
+            int availableHeight = this.ClientSize.Height - panelMiddle.Top - 20;
+
+            if (availableWidth <= 0 || availableHeight <= 0) return;
+
+            int newTileSize = Math.Min(availableWidth / (cols + 2), availableHeight / (rows + 2));
+            if (newTileSize < 20) newTileSize = 20;
+
+            tileSize = newTileSize;
+
+            panelMiddle.Size = new Size((cols + 2) * tileSize, (rows + 2) * tileSize);
+            if (panelOverPlay != null)
+            {
+                panelOverPlay.Size = panelMiddle.Size;
+            }
+
+            panelMiddle.Left = (this.ClientSize.Width - panelMiddle.Width) / 2;
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if (congiappictureBox[i, j] != null)
+                    {
+                        congiappictureBox[i, j].Width = tileSize;
+                        congiappictureBox[i, j].Height = tileSize;
+                        congiappictureBox[i, j].Left = (j + 1) * tileSize;
+                        congiappictureBox[i, j].Top = (i + 1) * tileSize;
+                    }
+                }
+            }
+
+            if (panelOverPlay != null) panelOverPlay.Invalidate();
         }
 
         private void PlayBackgroundMusic()
@@ -127,7 +181,6 @@ namespace Pikachu
                 congiapIndexes.Add(index);
             }
 
-            // Trộn danh sách hình ảnh
             ShuffleList(congiapIndexes);
 
             int k = 0;
@@ -157,7 +210,6 @@ namespace Pikachu
                 }
             }
 
-            // Kiểm tra xem bàn hiện tại có đường đi hợp lệ không, nếu không tự động xáo lại ngay từ đầu
             while (!HasAnyValidMove())
             {
                 ShuffleBoardValues();
@@ -182,7 +234,6 @@ namespace Pikachu
             }
         }
 
-        // Hàm xáo trộn lại các giá trị còn lại trên bàn khi bị kẹt
         private void ShuffleBoardValues()
         {
             List<int> remainingValues = new List<int>();
@@ -213,7 +264,6 @@ namespace Pikachu
             }
         }
 
-        // Kiểm tra xem trên bàn còn ít nhất một cặp có thể nối được hay không
         private bool HasAnyValidMove()
         {
             for (int r1 = 0; r1 < rows; r1++)
@@ -253,9 +303,126 @@ namespace Pikachu
             selected2 = null;
         }
 
+        // ===============================================
+        // ĐÃ THÊM: HÀM DỒN Ô (LÙI TRÁI, PHẢI, TRÊN, DƯỚI)
+        // ===============================================
+        private void ShiftTiles(int level)
+        {
+            bool hasChanged = false;
+
+            if (level == 2) // Lùi xuống dưới
+            {
+                for (int c = 0; c < cols; c++)
+                {
+                    for (int r = rows - 1; r >= 0; r--)
+                    {
+                        if (boardMap[r, c] == -1)
+                        {
+                            for (int k = r - 1; k >= 0; k--)
+                            {
+                                if (boardMap[k, c] != -1)
+                                {
+                                    boardMap[r, c] = boardMap[k, c];
+                                    boardMap[k, c] = -1;
+                                    hasChanged = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (level == 3) // Lùi lên trên
+            {
+                for (int c = 0; c < cols; c++)
+                {
+                    for (int r = 0; r < rows; r++)
+                    {
+                        if (boardMap[r, c] == -1)
+                        {
+                            for (int k = r + 1; k < rows; k++)
+                            {
+                                if (boardMap[k, c] != -1)
+                                {
+                                    boardMap[r, c] = boardMap[k, c];
+                                    boardMap[k, c] = -1;
+                                    hasChanged = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (level == 4) // Lùi sang trái
+            {
+                for (int r = 0; r < rows; r++)
+                {
+                    for (int c = 0; c < cols; c++)
+                    {
+                        if (boardMap[r, c] == -1)
+                        {
+                            for (int k = c + 1; k < cols; k++)
+                            {
+                                if (boardMap[r, k] != -1)
+                                {
+                                    boardMap[r, c] = boardMap[r, k];
+                                    boardMap[r, k] = -1;
+                                    hasChanged = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (level >= 5) // Lùi sang phải
+            {
+                for (int r = 0; r < rows; r++)
+                {
+                    for (int c = cols - 1; c >= 0; c--)
+                    {
+                        if (boardMap[r, c] == -1)
+                        {
+                            for (int k = c - 1; k >= 0; k--)
+                            {
+                                if (boardMap[r, k] != -1)
+                                {
+                                    boardMap[r, c] = boardMap[r, k];
+                                    boardMap[r, k] = -1;
+                                    hasChanged = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Nếu có sự dịch chuyển ô, thì vẽ lại tất cả các hình
+            if (hasChanged)
+            {
+                for (int r = 0; r < rows; r++)
+                {
+                    for (int c = 0; c < cols; c++)
+                    {
+                        if (boardMap[r, c] == -1)
+                        {
+                            congiappictureBox[r, c].Image = null;
+                        }
+                        else
+                        {
+                            congiappictureBox[r, c].Image = congiapImages[boardMap[r, c]];
+                        }
+                    }
+                }
+            }
+        }
+
+
         private async void picturebox_Click(object sender, EventArgs e)
         {
-            if (isProcessing) return;
+            if (isProcessing || isPaused) return;
 
             PictureBox selected = sender as PictureBox;
 
@@ -323,6 +490,11 @@ namespace Pikachu
                         selected1 = null;
                         selected2 = null;
 
+                        // ===============================================
+                        // GỌI HÀM DỒN Ô SAU KHI XÓA CẶP HÌNH THÀNH CÔNG
+                        // ===============================================
+                        ShiftTiles(currentLevel);
+
                         connectionPoints.Clear();
                         panelOverPlay.Invalidate();
                         panelMiddle.Invalidate(true);
@@ -337,8 +509,8 @@ namespace Pikachu
                             SavePlayerScore(userName, score);
 
                             DialogResult result = MessageBox.Show(
-                                "Chúc mừng bạn đã chiến thắng! Điểm của bạn: " + score,
-                                "Bạn có muốn chơi tiếp không?",
+                                "Chúc mừng bạn đã vượt qua màn " + currentLevel + "!\nĐiểm hiện tại: " + score + "\nBạn có muốn chơi tiếp màn sau không?",
+                                "Qua màn thành công",
                                 MessageBoxButtons.YesNo,
                                 MessageBoxIcon.Question
                             );
@@ -354,7 +526,7 @@ namespace Pikachu
                         }
                         else
                         {
-                            // Kiểm tra nếu nước đi tiếp theo bị kẹt, tự động xáo lại bàn chơi và thông báo cho người chơi
+                            // Kiểm tra lại đường đi hợp lệ sau khi dồn ô
                             while (!IsBoardCleaned() && !HasAnyValidMove())
                             {
                                 ShuffleBoardValues();
@@ -507,6 +679,7 @@ namespace Pikachu
         {
             diem.Text = "Điểm: " + score;
             Time.Text = "Thời gian: " + timeLeft;
+            this.Text = "Game Pikachu - Màn " + currentLevel;
 
             GetHighScore(userName);
         }
@@ -528,15 +701,15 @@ namespace Pikachu
                 SavePlayerScore(userName, score);
 
                 DialogResult result = MessageBox.Show(
-                    "Hết thời gian! Điểm của bạn: " + score,
-                    "Bạn có muốn chơi lại không?",
+                    "Hết thời gian! Bạn dừng lại ở màn " + currentLevel + " với số điểm: " + score + ".\nBạn có muốn chơi lại từ đầu không?",
+                    "Game Over",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question
                 );
 
                 if (result == DialogResult.Yes)
                 {
-                    ResetGame(true);
+                    ResetGame(false);
                 }
                 else
                 {
@@ -563,29 +736,52 @@ namespace Pikachu
 
             try
             {
-                using (SqlConnection connection = CONNECT.GetConnection())
-                {
-                    connection.Open();
-
-                    string query = "INSERT INTO [dbo].[PlayerScores] (UserName, Score) " +
-                                   "VALUES (@UserName, @Score)";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.Add("@UserName", SqlDbType.NVarChar, 50).Value = userName;
-                        command.Parameters.Add("@Score", SqlDbType.Int).Value = score;
-
-                        command.ExecuteNonQuery();
-                    }
-                }
+                int timeSpent = 300 - timeLeft;
+                string record = $"{userName},{score},{timeSpent}{Environment.NewLine}";
+                File.AppendAllText(scoreFilePath, record);
                 GetHighScore(userName);
             }
             catch (Exception ex)
             {
                 daLuuDiem = false;
+                MessageBox.Show("Có lỗi khi lưu điểm: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
-                MessageBox.Show("Có lỗi khi lưu điểm: " + ex.Message,
-                    "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        private void GetHighScore(string userName)
+        {
+            try
+            {
+                int highScore = 0;
+
+                if (File.Exists(scoreFilePath))
+                {
+                    string[] lines = File.ReadAllLines(scoreFilePath);
+
+                    foreach (string line in lines)
+                    {
+                        if (string.IsNullOrWhiteSpace(line)) continue;
+
+                        string[] parts = line.Split(',');
+
+                        if (parts.Length >= 2 && parts[0] == userName)
+                        {
+                            if (int.TryParse(parts[1], out int currentScore))
+                            {
+                                if (currentScore > highScore)
+                                {
+                                    highScore = currentScore;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                diemkyluc.Text = "Điểm Kỷ Lục: " + highScore;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Có lỗi khi lấy điểm kỷ lục: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -595,8 +791,27 @@ namespace Pikachu
             formBXH.ShowDialog();
         }
 
-        private void ResetGame(bool IsContinue = false)
+        private void ResetGame(bool isContinue = false)
         {
+            if (isContinue)
+            {
+                currentLevel++;
+                if (currentLevel == 2) { rows = 8; cols = 12; }
+                else if (currentLevel == 3) { rows = 10; cols = 14; }
+                else if (currentLevel == 4) { rows = 10; cols = 16; }
+                else if (currentLevel >= 5) { rows = 12; cols = 18; }
+            }
+            else
+            {
+                currentLevel = 1;
+                score = 0;
+                rows = 6;
+                cols = 10;
+            }
+
+            int calculatedTime = 300 - (currentLevel > 4 ? (currentLevel - 4) * 30 : 0);
+            timeLeft = Math.Max(calculatedTime, 60);
+
             panelMiddle.Controls.Clear();
 
             if (panelOverPlay != null)
@@ -611,12 +826,12 @@ namespace Pikachu
             isProcessing = false;
             daLuuDiem = false;
 
-            score = 0;
-            timeLeft = 300;
-            diem.Text = "Điểm: 0";
+            diem.Text = "Điểm: " + score;
             Time.Text = "Thời gian: " + timeLeft + "s";
+            this.Text = "Game Pikachu - Màn " + currentLevel;
 
             Initializeboard();
+            UpdateBoardSize();
 
             if (countdownTimer != null)
             {
@@ -627,42 +842,7 @@ namespace Pikachu
 
         private void btnReset_Click(object sender, EventArgs e)
         {
-            ResetGame();
-        }
-
-        private void GetHighScore(string userName)
-        {
-            try
-            {
-                using (SqlConnection connection = CONNECT.GetConnection())
-                {
-                    connection.Open();
-
-                    string query = "SELECT MAX(Score) FROM [dbo].[PlayerScores] WHERE UserName = @UserName";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.Add("@UserName", SqlDbType.NVarChar, 50).Value = userName;
-
-                        object result = command.ExecuteScalar();
-
-                        if (result != null && result != DBNull.Value)
-                        {
-                            int highScore = Convert.ToInt32(result);
-                            diemkyluc.Text = "Điểm Kỷ Lục: " + highScore;
-                        }
-                        else
-                        {
-                            diemkyluc.Text = "Điểm Kỷ Lục: 0";
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Có lỗi khi lấy điểm kỷ lục: " + ex.Message,
-                    "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            ResetGame(false);
         }
 
         private void panelBoard_Paint(object sender, PaintEventArgs e)
@@ -719,5 +899,128 @@ namespace Pikachu
 
             MessageBox.Show(luatChoi, "Luật Chơi Pikachu", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-    } // KẾT THÚC CLASS FORM1 TẠI ĐÂY
-} // KẾT THÚC NAMESPACE
+
+        private void pause_Click(object sender, EventArgs e)
+        {
+            isPaused = !isPaused;
+
+            Button btnPause = sender as Button;
+
+            if (isPaused)
+            {
+                countdownTimer.Stop();
+                panelMiddle.Visible = false;
+
+                if (btnPause != null)
+                {
+                    btnPause.Text = "";
+                    btnPause.BackgroundImage = Properties.Resources.play_buttton;
+                    btnPause.BackgroundImageLayout = ImageLayout.Stretch;
+                }
+
+                if (isMusicPlaying && bgMusicPlayer != null)
+                {
+                    bgMusicPlayer.Stop();
+                }
+            }
+            else
+            {
+                countdownTimer.Start();
+                panelMiddle.Visible = true;
+
+                if (btnPause != null)
+                {
+                    btnPause.Text = "";
+                    btnPause.BackgroundImage = Properties.Resources.pause;
+                    btnPause.BackgroundImageLayout = ImageLayout.Stretch;
+                }
+
+                if (isMusicPlaying && bgMusicPlayer != null)
+                {
+                    bgMusicPlayer.PlayLooping();
+                }
+            }
+        }
+
+        private async void hint_Click_1(object sender, EventArgs e)
+        {
+            if (isPaused || isProcessing) return;
+
+            for (int r1 = 0; r1 < rows; r1++)
+            {
+                for (int c1 = 0; c1 < cols; c1++)
+                {
+                    if (boardMap[r1, c1] == -1) continue;
+
+                    for (int r2 = 0; r2 < rows; r2++)
+                    {
+                        for (int c2 = 0; c2 < cols; c2++)
+                        {
+                            if (boardMap[r2, c2] == -1) continue;
+                            if (r1 == r2 && c1 == c2) continue;
+
+                            if (boardMap[r1, c1] == boardMap[r2, c2])
+                            {
+                                Point p1 = new Point(r1, c1);
+                                Point p2 = new Point(r2, c2);
+                                var path = ConnectStraight(p1, p2) ?? ConnectL(p1, p2) ?? Connect3Line(p1, p2);
+
+                                if (path != null)
+                                {
+                                    await ShowHintAsync(p1, p2);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void shuffle_Click(object sender, EventArgs e)
+        {
+            if (isPaused || isProcessing) return;
+
+            if (selected1 != null) selected1.BorderStyle = BorderStyle.FixedSingle;
+            if (selected2 != null) selected2.BorderStyle = BorderStyle.FixedSingle;
+            selected1 = null;
+            selected2 = null;
+
+            ShuffleBoardValues();
+
+            while (!IsBoardCleaned() && !HasAnyValidMove())
+            {
+                ShuffleBoardValues();
+            }
+        }
+
+        private async Task ShowHintAsync(Point p1, Point p2)
+        {
+            isProcessing = true;
+
+            PictureBox pb1 = congiappictureBox[p1.X, p1.Y];
+            PictureBox pb2 = congiappictureBox[p2.X, p2.Y];
+
+            Color originalColor = pb1.BackColor;
+            BorderStyle originalBorder = pb1.BorderStyle;
+
+            pb1.BackColor = Color.Yellow;
+            pb2.BackColor = Color.Yellow;
+            pb1.BorderStyle = BorderStyle.Fixed3D;
+            pb2.BorderStyle = BorderStyle.Fixed3D;
+
+            pb1.Refresh();
+            pb2.Refresh();
+
+            await Task.Delay(800);
+
+            pb1.BackColor = originalColor;
+            pb2.BackColor = originalColor;
+            pb1.BorderStyle = originalBorder;
+            pb2.BorderStyle = originalBorder;
+
+            isProcessing = false;
+        }
+
+    }
+}

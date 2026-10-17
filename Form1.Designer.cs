@@ -31,6 +31,11 @@ namespace Pikachu
         private void InitializeComponent()
         {
             this.panelBoard = new System.Windows.Forms.Panel();
+            this.shuffle = new System.Windows.Forms.Button();
+            this.hint = new System.Windows.Forms.Button();
+            this.pause = new System.Windows.Forms.Button();
+            this.huongdan = new System.Windows.Forms.Button();
+            this.btnToggleMusic = new System.Windows.Forms.Button();
             this.bxh = new System.Windows.Forms.Button();
             this.choilai = new System.Windows.Forms.Button();
             this.Time = new System.Windows.Forms.Label();
@@ -39,14 +44,15 @@ namespace Pikachu
             this.panelMiddle = new System.Windows.Forms.Panel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.panelOverPlay = new System.Windows.Forms.Panel();
-            this.btnToggleMusic = new System.Windows.Forms.Button();
-            this.huongdan = new System.Windows.Forms.Button();
             this.panelBoard.SuspendLayout();
             this.panelMiddle.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelBoard
             // 
+            this.panelBoard.Controls.Add(this.shuffle);
+            this.panelBoard.Controls.Add(this.hint);
+            this.panelBoard.Controls.Add(this.pause);
             this.panelBoard.Controls.Add(this.huongdan);
             this.panelBoard.Controls.Add(this.btnToggleMusic);
             this.panelBoard.Controls.Add(this.bxh);
@@ -59,13 +65,69 @@ namespace Pikachu
             this.panelBoard.Size = new System.Drawing.Size(790, 105);
             this.panelBoard.TabIndex = 0;
             // 
+            // shuffle
+            // 
+            this.shuffle.BackgroundImage = global::Pikachu.Properties.Resources.shuffle;
+            this.shuffle.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.shuffle.Location = new System.Drawing.Point(437, 16);
+            this.shuffle.Name = "shuffle";
+            this.shuffle.Size = new System.Drawing.Size(35, 33);
+            this.shuffle.TabIndex = 9;
+            this.shuffle.UseVisualStyleBackColor = true;
+            this.shuffle.Click += new System.EventHandler(this.shuffle_Click);
+            // 
+            // hint
+            // 
+            this.hint.Font = new System.Drawing.Font("Times New Roman", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.hint.Location = new System.Drawing.Point(359, 17);
+            this.hint.Name = "hint";
+            this.hint.Size = new System.Drawing.Size(62, 33);
+            this.hint.TabIndex = 8;
+            this.hint.Text = "Gợi ý";
+            this.hint.UseVisualStyleBackColor = true;
+            this.hint.Click += new System.EventHandler(this.hint_Click_1);
+            // 
+            // pause
+            // 
+            this.pause.BackgroundImage = global::Pikachu.Properties.Resources.pause;
+            this.pause.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pause.Location = new System.Drawing.Point(478, 56);
+            this.pause.Name = "pause";
+            this.pause.Size = new System.Drawing.Size(37, 34);
+            this.pause.TabIndex = 7;
+            this.pause.UseVisualStyleBackColor = true;
+            this.pause.Click += new System.EventHandler(this.pause_Click);
+            // 
+            // huongdan
+            // 
+            this.huongdan.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.huongdan.Location = new System.Drawing.Point(359, 56);
+            this.huongdan.Name = "huongdan";
+            this.huongdan.Size = new System.Drawing.Size(113, 34);
+            this.huongdan.TabIndex = 6;
+            this.huongdan.Text = "Hướng dẫn";
+            this.huongdan.UseVisualStyleBackColor = true;
+            this.huongdan.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // btnToggleMusic
+            // 
+            this.btnToggleMusic.BackgroundImage = global::Pikachu.Properties.Resources.mở_nhạc;
+            this.btnToggleMusic.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnToggleMusic.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnToggleMusic.Location = new System.Drawing.Point(478, 16);
+            this.btnToggleMusic.Name = "btnToggleMusic";
+            this.btnToggleMusic.Size = new System.Drawing.Size(37, 33);
+            this.btnToggleMusic.TabIndex = 5;
+            this.btnToggleMusic.UseVisualStyleBackColor = true;
+            this.btnToggleMusic.Click += new System.EventHandler(this.button1_Click);
+            // 
             // bxh
             // 
             this.bxh.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.bxh.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bxh.Location = new System.Drawing.Point(508, 15);
+            this.bxh.Location = new System.Drawing.Point(521, 15);
             this.bxh.Name = "bxh";
-            this.bxh.Size = new System.Drawing.Size(165, 75);
+            this.bxh.Size = new System.Drawing.Size(152, 75);
             this.bxh.TabIndex = 4;
             this.bxh.Text = "Bảng Xếp Hạng";
             this.bxh.UseVisualStyleBackColor = false;
@@ -88,7 +150,7 @@ namespace Pikachu
             this.Time.AutoSize = true;
             this.Time.Font = new System.Drawing.Font("Times New Roman", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Time.ForeColor = System.Drawing.Color.Red;
-            this.Time.Location = new System.Drawing.Point(264, 20);
+            this.Time.Location = new System.Drawing.Point(159, 56);
             this.Time.Name = "Time";
             this.Time.Size = new System.Drawing.Size(132, 25);
             this.Time.TabIndex = 2;
@@ -99,7 +161,7 @@ namespace Pikachu
             this.diem.AutoSize = true;
             this.diem.Font = new System.Drawing.Font("Times New Roman", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.diem.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.diem.Location = new System.Drawing.Point(10, 67);
+            this.diem.Location = new System.Drawing.Point(10, 56);
             this.diem.Name = "diem";
             this.diem.Size = new System.Drawing.Size(90, 25);
             this.diem.TabIndex = 1;
@@ -111,7 +173,7 @@ namespace Pikachu
             this.diemkyluc.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.diemkyluc.Font = new System.Drawing.Font("Times New Roman", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.diemkyluc.ForeColor = System.Drawing.Color.Indigo;
-            this.diemkyluc.Location = new System.Drawing.Point(8, 15);
+            this.diemkyluc.Location = new System.Drawing.Point(9, 12);
             this.diemkyluc.Name = "diemkyluc";
             this.diemkyluc.Size = new System.Drawing.Size(204, 32);
             this.diemkyluc.TabIndex = 0;
@@ -142,29 +204,6 @@ namespace Pikachu
             this.panelOverPlay.Size = new System.Drawing.Size(14, 8);
             this.panelOverPlay.TabIndex = 0;
             this.panelOverPlay.Paint += new System.Windows.Forms.PaintEventHandler(this.panelOverPlay_Paint);
-            // 
-            // btnToggleMusic
-            // 
-            this.btnToggleMusic.BackgroundImage = global::Pikachu.Properties.Resources.mở_nhạc;
-            this.btnToggleMusic.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnToggleMusic.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnToggleMusic.Location = new System.Drawing.Point(443, 31);
-            this.btnToggleMusic.Name = "btnToggleMusic";
-            this.btnToggleMusic.Size = new System.Drawing.Size(46, 45);
-            this.btnToggleMusic.TabIndex = 5;
-            this.btnToggleMusic.UseVisualStyleBackColor = true;
-            this.btnToggleMusic.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // huongdan
-            // 
-            this.huongdan.Font = new System.Drawing.Font("Times New Roman", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.huongdan.Location = new System.Drawing.Point(269, 56);
-            this.huongdan.Name = "huongdan";
-            this.huongdan.Size = new System.Drawing.Size(113, 36);
-            this.huongdan.TabIndex = 6;
-            this.huongdan.Text = "Hướng dẫn";
-            this.huongdan.UseVisualStyleBackColor = true;
-            this.huongdan.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // Form1
             // 
@@ -200,6 +239,9 @@ namespace Pikachu
         private System.Windows.Forms.Panel panelOverPlay;
         private System.Windows.Forms.Button btnToggleMusic;
         private System.Windows.Forms.Button huongdan;
+        private System.Windows.Forms.Button pause;
+        private System.Windows.Forms.Button shuffle;
+        private System.Windows.Forms.Button hint;
     }
 }
 

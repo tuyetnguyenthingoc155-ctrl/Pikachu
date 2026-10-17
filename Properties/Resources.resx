@@ -118,68 +118,59 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="conheo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>conheo.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="play_buttton" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\play-buttton.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="contho" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>contho.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="contrau" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>contrau.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="conheo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>conheo.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="conga" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>conga.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="conrong" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>conrong.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="conran" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="conran1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>conran.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="concho" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>concho.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="conchuot" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>conchuot.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="conkhi" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>conkhi.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="conngua" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>conngua.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="concuu" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>concuu.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="conho" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>conho.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="concho1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>concho.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="conchuot1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>conchuot.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="concuu1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>concuu.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="conga1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>conga.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="conheo1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>conheo.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="conho1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>conho.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="conga1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>conga.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="conkhi1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="contrau" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>contrau.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="contrau1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>contrau.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="conkhi" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>conkhi.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="concuu1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>concuu.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pause" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pause.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="concho1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>concho.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tắt nhạc" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tắt nhạc.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="nhacnen" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\nhacnen.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="conngua1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>conngua.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="conran1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>conran.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="conngua" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>conngua.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="mở nhạc" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\mở nhạc.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="concuu" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>concuu.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="conrong1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>conrong.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -187,16 +178,34 @@
   <data name="contho1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>contho.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="contrau1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>contrau.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="conkhi1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>conkhi.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="mở nhạc" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\mở nhạc.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="conchuot1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>conchuot.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="tắt nhạc" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\tắt nhạc.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="conchuot" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>conchuot.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="nhacnen" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\nhacnen.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="conrong" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>conrong.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="concho" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>concho.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="conho1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>conho.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="conran" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>conran.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="conho" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>conho.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="conga" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>conga.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="shuffle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\shuffle.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

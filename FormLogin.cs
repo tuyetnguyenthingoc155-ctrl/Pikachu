@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
+using System.IO; // Thêm thư viện này để đọc/ghi file text
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,36 +33,53 @@ namespace Pikachu
 
             try
             {
-                using (SqlConnection connection = CONNECT.GetConnection())
+                // Đường dẫn file lưu tài khoản nằm trong thư mục chạy của chương trình (bin/Debug)
+                string filePath = Application.StartupPath + "\\accounts.txt";
+
+                // Kiểm tra xem file đã được tạo chưa
+                if (!File.Exists(filePath))
                 {
-                    connection.Open();
+                    MessageBox.Show(
+                        "Tên đăng nhập không tồn tại. Vui lòng đăng ký trước.",
+                        "Lỗi",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
 
-                    string query = "SELECT COUNT(*) FROM [dbo].[Table] WHERE UserName = @UserName";
+                // Đọc toàn bộ danh sách tài khoản từ file
+                string[] lines = File.ReadAllLines(filePath);
+                bool isLoginSuccess = false;
 
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                foreach (string line in lines)
+                {
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+
+                    // So sánh tên nhập vào với tên lưu trong file
+                    if (line.Trim().Equals(userName, StringComparison.OrdinalIgnoreCase))
                     {
-                        command.Parameters.AddWithValue("@UserName", userName);
-
-                        int count = (int)command.ExecuteScalar();
-
-                        if (count > 0)
-                        {
-                            UserName = userName;
-
-                            Form1 game = new Form1(UserName);
-                            this.Hide();
-                            game.ShowDialog();
-                            this.Show();
-                        }
-                        else
-                        {
-                            MessageBox.Show(
-                                "Tên đăng nhập không tồn tại. Vui lòng đăng ký trước.",
-                                "Lỗi",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                        }
+                        isLoginSuccess = true;
+                        break;
                     }
+                }
+
+                if (isLoginSuccess)
+                {
+                    UserName = userName;
+
+                    // Chuyển sang Form1 (Game)
+                    Form1 game = new Form1(UserName);
+                    this.Hide();
+                    game.ShowDialog();
+                    this.Show(); // Hiện lại form đăng nhập sau khi đóng game
+                }
+                else
+                {
+                    MessageBox.Show(
+                        "Tên đăng nhập không tồn tại. Vui lòng đăng ký trước.",
+                        "Lỗi",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
@@ -78,6 +95,11 @@ namespace Pikachu
             {
                 formsignin.ShowDialog();
             }
+        }
+
+        private void DangNhap_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
